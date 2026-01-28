@@ -9,6 +9,8 @@
             --primary-pink: #ffafbd;
             --secondary-pink: #ffc3a0;
             --text-color: #5a5a5a;
+            --btn-forgive: #d88a8a;
+            --btn-never: rgba(255, 0, 0, 0.478);
         }
 
         body {
@@ -17,7 +19,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text-color);
@@ -26,54 +28,82 @@
 
         .card {
             background: white;
-            padding: 2rem;
+            padding: 2.5rem 1.5rem;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
             max-width: 400px;
-            width: 90%;
+            width: 85%;
             animation: fadeIn 1.5s ease-out;
+            position: relative;
+            z-index: 10;
         }
 
         .icon-container {
-            font-size: 80px;
+            font-size: clamp(60px, 10vw, 80px);
             margin-bottom: 1rem;
             animation: float 3s ease-in-out infinite;
         }
 
         h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
             color: #d88a8a;
         }
 
-        p {
+        #message {
             line-height: 1.6;
             font-size: 1.1rem;
+            min-height: 3em;
+            margin: 1rem 0;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 1.5rem;
+            position: relative;
         }
 
         .btn {
-            margin-top: 1.5rem;
-            padding: 10px 25px;
-            background: #d88a8a;
+            padding: 12px 25px;
+            background: var(--btn-forgive);
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            white-space: nowrap;
+            z-index: 5;
         }
 
-        .btn:hover {
-            background: #c27676;
-            transform: scale(1.05);
+        .btn1 {
+            padding: 12px 25px;
+            background: var(--btn-never);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            z-index: 4;
+            text-align: center;
+        }
+
+        .btn1:hover {
+            background-color: red;
         }
 
         /* Animations */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
 
         @keyframes fadeIn {
@@ -81,43 +111,96 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Floating background hearts */
         .bg-heart {
             position: absolute;
             color: rgba(255, 255, 255, 0.4);
             z-index: -1;
             animation: rise 10s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes rise {
             from { transform: translateY(100vh) rotate(0deg); opacity: 1; }
             to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .card { padding: 1.5rem 1rem; }
+            .button-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div class="icon-container">😔</div>
-        <h1>I'm Truly Sorry</h1>
-        <p>I messed up, and I value our relationship more than being right. Can we start over? I'd love to make it up to you.</p>
-        <a href="mailto:your-email@example.com" class="btn">Forgive Me?</a>
+        <div class="icon-container" id="emoji">😔</div>
+        <h1>I'm Truly Sorry Baby</h1>
+        <p id="message">宝宝对不起，不要这样对我了啦</p>
+        <div class="button-group">
+            <a href="heart.html" class="btn" id="forgiveBtn">Forgive Me?</a>
+            <button class="btn1" id="neverBtn">Never</button>
+        </div>
     </div>
 
     <script>
-        // Create simple floating background elements
+        const neverBtn = document.getElementById('neverBtn');
+        const forgiveBtn = document.getElementById('forgiveBtn');
+        const message = document.getElementById('message');
+        const emoji = document.getElementById('emoji');
+
+        let clickCount = 0;
+        let paddingVar = 12; // Initial vertical padding
+        let fontSizeVar = 16; // Initial font size
+
+        const messages = [
+            "我真的知道错了嘛... 🥺",
+            "再给我一次机会好不好？ 🌹",
+            "求求你了，原谅我吧！ 🙏",
+            "我会乖乖听话的，真的！ ✨",
+            "别生气了，生气对身体不好哦～ ❤️",
+            "你就原谅我这一次嘛！"
+        ];
+
+        const emojis = ["🥺", "😭", "😢", "🩹", "🧸"];
+
+        neverBtn.addEventListener('click', () => {
+            clickCount++;
+
+            // 1. Change text and emoji
+            message.innerText = messages[Math.min(clickCount - 1, messages.length - 1)];
+            emoji.innerText = emojis[Math.min(clickCount - 1, emojis.length - 1)];
+
+            // 2. Enlarge Forgive Button
+            paddingVar += 15; // Increase padding
+            fontSizeVar += 5; // Increase font size
+            
+            if (clickCount <= 4) {
+                forgiveBtn.style.padding = `${paddingVar}px ${paddingVar * 2}px`;
+                forgiveBtn.style.fontSize = `${fontSizeVar}px`;
+                forgiveBtn.style.textAlign = "center";
+            }
+
+            // 3. Check if 5 clicks reached
+            if (clickCount >= 5) {
+                neverBtn.style.display = 'none';
+                message.innerText = "你是逃不掉的，快点原谅我吧！ ❤️✨";
+                // Center the button fully
+                
+            }
+        });
+
+        // Floating Hearts Logic
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'bg-heart';
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            heart.style.duration = Math.random() * 5 + 5 + 's';
+            heart.style.animationDuration = Math.random() * 5 + 5 + 's';
             document.body.appendChild(heart);
 
-            setTimeout(() => {
-                heart.remove();
-            }, 10000);
+            setTimeout(() => { heart.remove(); }, 10000);
         }
 
         setInterval(createHeart, 800);
