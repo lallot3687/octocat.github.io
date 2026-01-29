@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Valentine's Day!</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-color: #ff4b2b;
+        }
+
+        body.purple-theme {
+            --bg-gradient: linear-gradient(135deg, #6a11cb, #2575fc);
+            --accent-color: #a18cd1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-gradient);
+            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            transition: background 1s ease;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            max-width: 500px;
+            width: 90%;
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        h1 {
+            color: #ff4b2b;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .gift-box {
+            font-size: 80px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 50px;
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        #surprise-text {
+            height: 30px;
+            font-weight: bold;
+            color: #d63031;
+            margin-top: 15px;
+        }
+
+        /* Floating Animation Elements */
+        .floating-heart {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            animation: moveUp 4s linear forwards;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes moveUp {
+            to {
+                transform: translateY(-100vh) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .controls { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="main-card">
+            <h1 id="title">Happy Valentine's Day!</h1>
+            <p>To someone very special...</p>
+            
+            <div class="gift-box" id="gift" onclick="openGift()">🎁</div>
+            
+            <div id="surprise-text">Click the gift for a surprise!</div>
+
+            <div class="controls">
+                <button class="btn" onclick="burstHearts()">Shower with Love ❤️</button>
+                <button class="btn" onclick="toggleTheme()">Change Theme ✨</button>
+                <button class="btn" onclick="addMusicNote()">Add Harmony 🎵</button>
+                <button class="btn" onclick="resetPage()">Reset Magic 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gift = document.getElementById('gift');
+        const surpriseText = document.getElementById('surprise-text');
+        const title = document.getElementById('title');
+
+        const messages = [
+            "You make my heart skip a beat! 💓",
+            "I'm so lucky to have you! 🍀",
+            "You are my sunshine! ☀️",
+            "I love you more than pizza! 🍕",
+            "You're the best part of my day! ✨"
+        ];
+
+        // 1. Open Gift Interaction
+        function openGift() {
+            gift.innerHTML = "💝";
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            surpriseText.innerText = randomMsg;
+            burstHearts();
+        }
+
+        // 2. Heart Burst Interaction
+        function burstHearts() {
+            for(let i=0; i<15; i++) {
+                createFloatingElement('❤️');
+            }
+        }
+
+        // 3. Harmony Interaction
+        function addMusicNote() {
+            for(let i=0; i<5; i++) {
+                createFloatingElement('🎵');
+            }
+        }
+
+        // Helper to create floating icons
+        function createFloatingElement(emoji) {
+            const el = document.createElement('div');
+            el.className = 'floating-heart';
+            el.innerText = emoji;
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.top = '100vh';
+            el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            document.body.appendChild(el);
+            
+            setTimeout(() => el.remove(), 4000);
+        }
+
+        // 4. Toggle Theme
+        function toggleTheme() {
+            document.body.classList.toggle('purple-theme');
+        }
+
+        // 5. Reset Interaction
+        function resetPage() {
+            gift.innerHTML = "🎁";
+            surpriseText.innerText = "Click the gift for a surprise!";
+            if(document.body.classList.contains('purple-theme')) {
+                toggleTheme();
+            }
+        }
+
+        // Constant ambient hearts
+        setInterval(() => createFloatingElement('🌸'), 2000);
+    </script>
+</body>
+</html>

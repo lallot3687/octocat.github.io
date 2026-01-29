@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Catcher Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #ffeef0;
+            font-family: 'Arial', sans-serif;
+            touch-action: none; /* Prevents scrolling while playing on mobile */
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ffafbd, #ffc3a0);
+        }
+
+        #basket {
+            position: absolute;
+            bottom: 20px;
+            width: 80px;
+            height: 60px;
+            font-size: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            user-select: none;
+        }
+
+        #score-board {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #ff4b2b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="score-board">Score: 0 | Missed: 0</div>
+    <div id="basket">🧺</div>
+    
+    <div id="game-over">
+        <h1>Game Over!</h1>
+        <p id="final-score"></p>
+        <button class="btn" onclick="resetGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const basket = document.getElementById('basket');
+    const scoreBoard = document.getElementById('score-board');
+    const gameOverScreen = document.getElementById('game-over');
+    const finalScoreText = document.getElementById('final-score');
+
+    let score = 0;
+    let missed = 0;
+    let gameActive = true;
+    let heartInterval;
+
+    // Move basket with mouse or touch
+    window.addEventListener('mousemove', (e) => {
+        if (!gameActive) return;
+        let x = e.clientX - basket.offsetWidth / 2;
+        // Keep basket within screen bounds
+        x = Math.max(0, Math.min(x, window.innerWidth - basket.offsetWidth));
+        basket.style.left = x + 'px';
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!gameActive) return;
+        let x = e.touches[0].clientX - basket.offsetWidth / 2;
+        x = Math.max(0, Math.min(x, window.innerWidth - basket.offsetWidth));
+        basket.style.left = x + 'px';
+    });
+
+    function createHeart() {
+        if (!gameActive) return;
+
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.innerHTML = Math.random() > 0.1 ? '❤️' : '💖'; // Mostly hearts, rare sparkly heart
+        heart.style.left = Math.random() * (window.innerWidth - 30) + 'px';
+        heart.style.top = '-50px';
+        container.appendChild(heart);
+
+        let top = -50;
+        let speed = 3 + Math.random() * 4; // Random falling speed
+
+        const fallInterval = setInterval(() => {
+            if (!gameActive) {
+                clearInterval(fallInterval);
+                heart.remove();
+                return;
+            }
+
+            top += speed;
+            heart.style.top = top + 'px';
+
+            // Check for collision
+            const basketRect = basket.getBoundingClientRect();
+            const heartRect = heart.getBoundingClientRect();
+
+            if (
+                heartRect.bottom >= basketRect.top &&
+                heartRect.right >= basketRect.left &&
+                heartRect.left <= basketRect.right &&
+                heartRect.top <= basketRect.bottom
+            ) {
+                score++;
+                updateScore();
+                clearInterval(fallInterval);
+                heart.remove();
+            }
+
+            // Check if missed
+            if (top > window.innerHeight) {
+                missed++;
+                updateScore();
+                clearInterval(fallInterval);
+                heart.remove();
+                if (missed >= 5) endGame();
+            }
+        }, 20);
+    }
+
+    function updateScore() {
+        scoreBoard.innerHTML = `Score: ${score} | Missed: ${missed}`;
+    }
+
+    function endGame() {
+        gameActive = false;
+        gameOverScreen.style.display = 'block';
+        finalScoreText.innerText = `You caught ${score} hearts!`;
+        clearInterval(heartInterval);
+    }
+
+    function resetGame() {
+        score = 0;
+        missed = 0;
+        gameActive = true;
+        updateScore();
+        gameOverScreen.style.display = 'none';
+        startGame();
+    }
+
+    function startGame() {
+        heartInterval = setInterval(createHeart, 800);
+    }
+
+    startGame();
+</script>
+
+</body>
+</html>
